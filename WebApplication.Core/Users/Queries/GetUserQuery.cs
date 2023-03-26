@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
@@ -37,6 +38,8 @@ namespace WebApplication.Core.Users.Queries
             /// <inheritdoc />
             public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
             {
+                if (request.Id <= 0) throw new ArgumentOutOfRangeException(null, "'Id' must be greater than '0'.");
+
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
 
                 if (user is default(User)) throw new NotFoundException($"The user '{request.Id}' could not be found.");

@@ -35,7 +35,12 @@ namespace WebApplication.Infrastructure.Services
         /// <inheritdoc />
         public async Task<IEnumerable<User>> FindAsync(string? givenNames, string? lastName, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to find users that match the provided given names OR last name.");
+            // throw new NotImplementedException("Implement a way to find users that match the provided given names OR last name.");
+            List<User> user = await _dbContext.Users.Where(user => user.GivenNames == givenNames || user.LastName == lastName)
+                                         .Include(x => x.ContactDetail)
+                                        .ToListAsync(cancellationToken);
+
+            return user;
         }
 
         /// <inheritdoc />
@@ -53,7 +58,10 @@ namespace WebApplication.Infrastructure.Services
         /// <inheritdoc />
         public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to update an existing user, including their contact details.");
+            var newUser = _dbContext.Update(user);
+
+            return newUser.Entity;
+            // throw new NotImplementedException("Implement a way to update an existing user, including their contact details.");
         }
 
         /// <inheritdoc />
