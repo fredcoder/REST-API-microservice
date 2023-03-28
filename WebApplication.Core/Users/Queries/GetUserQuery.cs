@@ -38,6 +38,8 @@ namespace WebApplication.Core.Users.Queries
             /// <inheritdoc />
             public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
             {
+                var validator = new Validator();
+                var val = validator.Validate(request);
                 if (request.Id <= 0) throw new ArgumentOutOfRangeException(null, "'Id' must be greater than '0'.");
 
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
