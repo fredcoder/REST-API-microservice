@@ -36,17 +36,21 @@ namespace WebApplication.Infrastructure.Services
         public async Task<IEnumerable<User>> FindAsync(string? givenNames, string? lastName, CancellationToken cancellationToken = default)
         {
             // throw new NotImplementedException("Implement a way to find users that match the provided given names OR last name.");
-            List<User> user = await _dbContext.Users.Where(user => user.GivenNames == givenNames || user.LastName == lastName)
+            List<User> users = await _dbContext.Users.Where(user => user.GivenNames == givenNames || user.LastName == lastName)
                                          .Include(x => x.ContactDetail)
                                         .ToListAsync(cancellationToken);
 
-            return user;
+            return users;
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<User>> GetPaginatedAsync(int page, int count, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to get a 'page' of users.");
+            // throw new NotImplementedException("Implement a way to get a 'page' of users.");
+
+            List<User> users = await _dbContext.Users.Include(x => x.ContactDetail)
+                                                     .ToListAsync(cancellationToken);
+            return users;
         }
 
         /// <inheritdoc />

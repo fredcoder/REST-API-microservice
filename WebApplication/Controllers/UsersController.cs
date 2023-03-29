@@ -31,12 +31,19 @@ namespace WebApplication.Controllers
             return Ok(result);
         }
 
-        // TODO: create a route (at /Find) that can retrieve a list of matching users using the `FindUsersQuery`
+        // create a controller route (at /Find) that can retrieve a list of matching users using the `FindUsersQuery`
+        [HttpGet("Find")]
+        [ProducesResponseType(typeof(PaginatedDto<IEnumerable<UserDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUserAsync(
+            [FromQuery] FindUsersQuery query,
+            CancellationToken cancellationToken)
+        {
+            IEnumerable<UserDto> result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
 
-        // TODO: create a route (at /List) that can retrieve a paginated list of users using the `ListUsersQuery`
+        // create a route (at /List) that can retrieve a paginated list of users using the `ListUsersQuery`
         [HttpGet("List")]
-        //[HttpGet]
-        //[Route("/List")]
         [ProducesResponseType(typeof(PaginatedDto<IEnumerable<UserDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserAsync(
             [FromQuery] ListUsersQuery query,
@@ -47,7 +54,7 @@ namespace WebApplication.Controllers
         }
         // TODO: create a route that can create a user using the `CreateUserCommand`
 
-        // TODO: create a route that can update an existing user using the `UpdateUserCommand`
+        // create a route that can update an existing user using the `UpdateUserCommand`
         [HttpPut]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> PutUserAsync(
