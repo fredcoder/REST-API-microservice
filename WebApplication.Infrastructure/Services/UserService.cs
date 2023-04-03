@@ -89,7 +89,15 @@ namespace WebApplication.Infrastructure.Services
         /// <inheritdoc />
         public async Task<User?> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to delete an existing user, including their contact details.");
+            User? user = await _dbContext.Users.Where(user => user.Id == id)
+                                         .Include(x => x.ContactDetail)
+                                         .FirstOrDefaultAsync(cancellationToken);
+
+            var deletedUser = _dbContext.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return deletedUser.Entity as User;
+            // throw new NotImplementedException("Implement a way to delete an existing user, including their contact details.");
         }
 
         /// <inheritdoc />

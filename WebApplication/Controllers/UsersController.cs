@@ -76,6 +76,14 @@ namespace WebApplication.Controllers
         }
 
         // TODO: create a route that can delete an existing user using the `DeleteUserCommand`
-
+        [HttpDelete]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteUserAsync(
+            [FromQuery] DeleteUserQuery query,
+            CancellationToken cancellationToken)
+        {
+            UserDto result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
     }
 }
