@@ -52,19 +52,30 @@ namespace WebApplication.Controllers
             PaginatedDto<IEnumerable<UserDto>> result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
-        // TODO: create a route that can create a user using the `CreateUserCommand`
-
-        // create a route that can update an existing user using the `UpdateUserCommand`
+        // TODO: create a route that can update a user using the `CreateUserCommand`
         [HttpPut]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> PutUserAsync(
-            [FromBody] PutUserQuery query,
-            CancellationToken cancellationToken)
+                [FromBody] PutUserQuery query,
+                CancellationToken cancellationToken)
         {
             UserDto result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
+        // create a route that can create an existing user using the `UpdateUserCommand`
+        [HttpPost]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> PostUserAsync(
+            [FromBody] PostUserQuery query,
+            CancellationToken cancellationToken)
+        {
+            UserDto result = await _mediator.Send(query, cancellationToken);
+            var location = Url.Action(nameof(GetUserAsync), new { id = result.UserId }) ?? $"/Users?id={result.UserId}";
+            return Created(location, result);
+        }
+
         // TODO: create a route that can delete an existing user using the `DeleteUserCommand`
+
     }
 }

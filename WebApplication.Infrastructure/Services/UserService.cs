@@ -47,22 +47,40 @@ namespace WebApplication.Infrastructure.Services
         public async Task<IEnumerable<User>> GetPaginatedAsync(int page, int count, CancellationToken cancellationToken = default)
         {
             // throw new NotImplementedException("Implement a way to get a 'page' of users.");
-
             List<User> users = await _dbContext.Users.Include(x => x.ContactDetail)
                                                      .ToListAsync(cancellationToken);
-            return users;
+
+            // Calculate the starting index of the page
+            int startIndex = count * (page - 1);
+
+            // Calculate the end index of the page
+            int endIndex = startIndex + count;
+
+            // Make sure the end index doesn't exceed the list size
+            if (endIndex > users.Count)
+            {
+                endIndex = users.Count;
+            }
+
+            // Return the page of items from the list
+            return users.GetRange(startIndex, endIndex - startIndex);
         }
 
         /// <inheritdoc />
         public async Task<User> AddAsync(User user, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to add a new user, including their contact details.");
+            var newUser = await _dbContext.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
+
+            return newUser.Entity;
+            //throw new NotImplementedException("Implement a way to add a new user, including their contact details.");
         }
 
         /// <inheritdoc />
         public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
             var newUser = _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
 
             return newUser.Entity;
             // throw new NotImplementedException("Implement a way to update an existing user, including their contact details.");
@@ -77,7 +95,10 @@ namespace WebApplication.Infrastructure.Services
         /// <inheritdoc />
         public async Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Implement a way to count the number of users in the database.");
+            // throw new NotImplementedException("Implement a way to count the number of users in the database.");
+            List<User> users = await _dbContext.Users.Include(x => x.ContactDetail)
+                                                     .ToListAsync(cancellationToken);
+            return users.Count;
         }
     }
 }

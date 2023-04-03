@@ -41,11 +41,20 @@ namespace WebApplication.Core.Users.Queries
 
                 IEnumerable<User> listUsers = await _userService.GetPaginatedAsync(request.PageNumber, request.ItemsPerPage);
 
-                IEnumerable<UserDto> listUsersDto = _mapper.Map<IEnumerable<UserDto>>(listUsers);
+                List<UserDto> listUsersDto = _mapper.Map<List<UserDto>>(listUsers);
+
+                int usersCount = await _userService.CountAsync();
+
+                // Calculate the starting index of the page
+                int startIndex = request.ItemsPerPage * (request.PageNumber - 1);
+
+                // Calculate the end index of the page
+                int endIndex = startIndex + request.ItemsPerPage;
 
                 PaginatedDto<IEnumerable<UserDto>> result = new PaginatedDto<IEnumerable<UserDto>>()
                 {
-                    Data = listUsersDto
+                    Data = listUsersDto,
+                    HasNextPage = endIndex < usersCount
                 };
 
                 return result;
