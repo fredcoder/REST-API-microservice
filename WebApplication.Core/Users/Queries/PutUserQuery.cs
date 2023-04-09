@@ -77,17 +77,19 @@ namespace WebApplication.Core.Users.Queries
                     throw new ArgumentOutOfRangeException(null, badRequestMessage);
                 }
 
-                List<User>? users = (List<User>)await _userService.FindAsync(request.GivenNames, request.LastName, cancellationToken);
+                User? updateUser = await _userService.GetAsync(request.Id, cancellationToken);
 
-                if (users.Count == 0)
+                if (updateUser == null)
                     throw new NotFoundException($"The user '{request.Id}' could not be found.");
-
-                User? updateUser = users[0];
 
                 updateUser.GivenNames = request?.GivenNames;
                 updateUser.LastName = request?.LastName;
-                updateUser.ContactDetail.EmailAddress = request?.EmailAddress;
-                updateUser.ContactDetail.MobileNumber = request?.MobileNumber;
+                updateUser.ContactDetail = new ContactDetail()
+                {
+                    EmailAddress = request?.EmailAddress,
+                    MobileNumber = request?.MobileNumber,
+                };
+
 
                 User? user = await _userService.UpdateAsync(updateUser, cancellationToken);
 
