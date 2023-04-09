@@ -93,6 +93,9 @@ namespace WebApplication.Infrastructure.Services
                                          .Include(x => x.ContactDetail)
                                          .FirstOrDefaultAsync(cancellationToken);
 
+            if (user == null)
+                return null;
+
             var deletedUser = _dbContext.Remove(user);
             await _dbContext.SaveChangesAsync();
 
