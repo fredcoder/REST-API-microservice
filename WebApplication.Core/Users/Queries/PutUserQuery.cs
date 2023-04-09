@@ -79,6 +79,9 @@ namespace WebApplication.Core.Users.Queries
 
                 List<User>? users = (List<User>)await _userService.FindAsync(request.GivenNames, request.LastName, cancellationToken);
 
+                if (users.Count == 0)
+                    throw new NotFoundException($"The user '{request.Id}' could not be found.");
+
                 User? updateUser = users[0];
 
                 updateUser.GivenNames = request?.GivenNames;
