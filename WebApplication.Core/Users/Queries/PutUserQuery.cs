@@ -24,8 +24,11 @@ namespace WebApplication.Core.Users.Queries
         {
             public Validator()
             {
-                RuleFor(x => x.Id)
-                    .GreaterThan(0);
+                RuleFor(x => x.Id).GreaterThan(0).WithState(x => "'Id' must be greater than '0'.;");
+                RuleFor(x => x.GivenNames).NotEqual("").WithState(x => "'Given Names' must not be empty.;");
+                RuleFor(x => x.LastName).NotEqual("").WithState(x => "'Last Name' must not be empty.;");
+                RuleFor(x => x.EmailAddress).NotEqual("").WithState(x => "'Email Address' must not be empty.;");
+                RuleFor(x => x.MobileNumber).NotEqual("").WithState(x => "'Mobile Number' must not be empty.");
             }
         }
 
@@ -46,30 +49,16 @@ namespace WebApplication.Core.Users.Queries
                 bool isBadRequest = false;
                 string badRequestMessage = string.Empty;
 
-                if (request.Id <= 0)
+                Validator validator = new Validator();
+                var valResult = validator.Validate(request);
+
+                foreach (var failure in valResult.Errors)
                 {
-                    badRequestMessage = badRequestMessage + "'Id' must be greater than '0'.;";
-                    isBadRequest = true;
-                }
-                if (request.GivenNames == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Given Names' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.LastName == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Last Name' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.EmailAddress == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Email Address' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.MobileNumber == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Mobile Number' must not be empty.";
-                    isBadRequest = true;
+                    if (failure.CustomState is string)
+                    {
+                        badRequestMessage = badRequestMessage + failure.CustomState;
+                        isBadRequest = true;
+                    }
                 }
 
                 if (isBadRequest)
