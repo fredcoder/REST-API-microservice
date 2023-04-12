@@ -59,7 +59,6 @@ namespace WebApplication.Core.Users.Queries
                 };
 
                 return result;
-                //throw new NotImplementedException("Implement a way to get a paginated list of all the users in the database.");
             }
         }
     }

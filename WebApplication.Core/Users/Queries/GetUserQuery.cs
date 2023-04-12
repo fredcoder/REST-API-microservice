@@ -19,8 +19,7 @@ namespace WebApplication.Core.Users.Queries
         {
             public Validator()
             {
-                RuleFor(x => x.Id)
-                    .GreaterThan(0);
+                RuleFor(x => x.Id).GreaterThan(0).WithState(x => new ArgumentOutOfRangeException(null, "'Id' must be greater than '0'."));
             }
         }
 
@@ -39,8 +38,7 @@ namespace WebApplication.Core.Users.Queries
             public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
             {
                 Validator validator = new Validator();
-                var valResult = validator.Validate(request);
-                if (!valResult.IsValid) throw new ArgumentOutOfRangeException(null, "'Id' must be greater than '0'.");
+                var valResult = validator.Validate(request, options => options.ThrowOnFailures());
 
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
 

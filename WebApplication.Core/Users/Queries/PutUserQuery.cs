@@ -79,7 +79,6 @@ namespace WebApplication.Core.Users.Queries
                     MobileNumber = request?.MobileNumber != null ? request.MobileNumber : "",
                 };
 
-
                 User? user = await _userService.UpdateAsync(updateUser, cancellationToken);
 
                 UserDto result = _mapper.Map<UserDto>(user);
