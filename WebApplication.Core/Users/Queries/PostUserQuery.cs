@@ -20,12 +20,14 @@ namespace WebApplication.Core.Users.Queries
         public string? MobileNumber { get; set; }
         public string? EmailAddress { get; set; }
 
-        public class Validator : AbstractValidator<PutUserQuery>
+        public class Validator : AbstractValidator<PostUserQuery>
         {
             public Validator()
             {
-                RuleFor(x => x.Id)
-                    .GreaterThan(0);
+                RuleFor(x => x.GivenNames).NotEqual("").WithState(x => "'Given Names' must not be empty.;");
+                RuleFor(x => x.LastName).NotEqual("").WithState(x => "'Last Name' must not be empty.;");
+                RuleFor(x => x.EmailAddress).NotEqual("").WithState(x => "'Email Address' must not be empty.;");
+                RuleFor(x => x.MobileNumber).NotEqual("").WithState(x => "'Mobile Number' must not be empty.");
             }
         }
 
@@ -46,25 +48,16 @@ namespace WebApplication.Core.Users.Queries
                 bool isBadRequest = false;
                 string badRequestMessage = string.Empty;
 
-                if (request.GivenNames == "")
+                Validator validator = new Validator();
+                var valResult = validator.Validate(request);
+
+                foreach (var failure in valResult.Errors)
                 {
-                    badRequestMessage = badRequestMessage + "'Given Names' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.LastName == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Last Name' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.EmailAddress == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Email Address' must not be empty.;";
-                    isBadRequest = true;
-                }
-                if (request.MobileNumber == "")
-                {
-                    badRequestMessage = badRequestMessage + "'Mobile Number' must not be empty.";
-                    isBadRequest = true;
+                    if (failure.CustomState is string)
+                    {
+                        badRequestMessage = badRequestMessage + failure.CustomState;
+                        isBadRequest = true;
+                    }
                 }
 
                 if (isBadRequest)
@@ -78,8 +71,8 @@ namespace WebApplication.Core.Users.Queries
                     LastName = request.LastName,
                     ContactDetail = new ContactDetail()
                     {
-                        EmailAddress = request.EmailAddress,
-                        MobileNumber = request.MobileNumber,
+                        EmailAddress = request.EmailAddress != null ? request.EmailAddress : "",
+                        MobileNumber = request.MobileNumber != null ? request.MobileNumber : "",
                     }
                 };
                 User newUser = await _userService.AddAsync(user, cancellationToken);

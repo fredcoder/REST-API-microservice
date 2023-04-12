@@ -71,12 +71,12 @@ namespace WebApplication.Core.Users.Queries
                 if (updateUser == null)
                     throw new NotFoundException($"The user '{request.Id}' could not be found.");
 
-                updateUser.GivenNames = request?.GivenNames;
-                updateUser.LastName = request?.LastName;
+                updateUser.GivenNames = request?.GivenNames != null ? request.GivenNames : "";
+                updateUser.LastName = request?.LastName != null ? request.LastName : "";
                 updateUser.ContactDetail = new ContactDetail()
                 {
-                    EmailAddress = request?.EmailAddress,
-                    MobileNumber = request?.MobileNumber,
+                    EmailAddress = request?.EmailAddress != null ? request.EmailAddress : "",
+                    MobileNumber = request?.MobileNumber != null ? request.MobileNumber : "",
                 };
 
 
