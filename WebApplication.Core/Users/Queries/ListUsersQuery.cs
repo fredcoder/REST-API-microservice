@@ -21,7 +21,7 @@ namespace WebApplication.Core.Users.Queries
         {
             public Validator()
             {
-                // TODO: Create a validation rule so that PageNumber is always greater than 0
+                RuleFor(x => x.PageNumber).GreaterThan(0).WithState(x => new ArgumentOutOfRangeException(null, "'Id' must be greater than '0'."));
             }
         }
 
@@ -37,7 +37,8 @@ namespace WebApplication.Core.Users.Queries
 
             public async Task<PaginatedDto<IEnumerable<UserDto>>> Handle(ListUsersQuery request, CancellationToken cancellationToken)
             {
-                if (request.PageNumber <= 0) throw new ArgumentOutOfRangeException(null, "'Page Number' must be greater than '0'.");
+                var validator = new Validator();
+                validator.Validate(request, options => options.ThrowOnFailures());
 
                 IEnumerable<User> listUsers = await _userService.GetPaginatedAsync(request.PageNumber, request.ItemsPerPage);
 
